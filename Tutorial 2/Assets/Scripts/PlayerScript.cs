@@ -15,6 +15,8 @@ public class PlayerScript : MonoBehaviour
 
     public GameObject winTextObject;
 
+    public GameObject loseTextObject;
+
     public Text lives;
 
     private int livesValue = 3;
@@ -25,6 +27,7 @@ public class PlayerScript : MonoBehaviour
         rd2d = GetComponent<Rigidbody2D>();
         score.text = scoreValue.ToString();
         winTextObject.SetActive(false);
+        loseTextObject.SetActive(false);
         lives.text = "Lives: " + livesValue.ToString();
     }
 
@@ -48,12 +51,17 @@ public class PlayerScript : MonoBehaviour
         {
             winTextObject.SetActive(true);
         }
-      if (collision.collider.tag == "Enemy")
+       if (collision.collider.tag == "Enemy")
         {
             livesValue -= 1;
             lives.text = "Lives: " + livesValue.ToString();
             Destroy(collision.collider.gameObject);
-        }  
+        }
+        if (livesValue <= 0) 
+        {
+            loseTextObject.SetActive(true);
+            gameObject.SetActive(false);
+        } 
     }
 
     private void OnCollisionStay2D(Collision2D collision)
