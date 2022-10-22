@@ -47,9 +47,14 @@ public class PlayerScript : MonoBehaviour
             score.text = scoreValue.ToString();
             Destroy(collision.collider.gameObject);
         }
-         if (scoreValue >= 4)
+         if (scoreValue >= 8)
         {
             winTextObject.SetActive(true);
+        }
+        if (scoreValue == 4) 
+        {
+            livesValue = 3;
+            transform.position = new Vector2(100f, 0.5f);
         }
        if (collision.collider.tag == "Enemy")
         {
