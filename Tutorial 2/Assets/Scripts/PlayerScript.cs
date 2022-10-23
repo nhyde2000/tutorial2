@@ -19,6 +19,8 @@ public class PlayerScript : MonoBehaviour
     public Transform groundcheck;
     public float checkRadius;
     public LayerMask allGround;
+    public Animator animator;
+    private bool facingRight = true;
    void Start()
     {
         rd2d = GetComponent<Rigidbody2D>();
@@ -38,9 +40,10 @@ public class PlayerScript : MonoBehaviour
         score.text = "Score: " + scoreValue.ToString();
         if (scoreValue >= 8)
         {
+            SoundManager.PlaySound("WinFantasia");
             WinTextObject.SetActive(true);
             gameObject.SetActive(false);
-
+            
         }
         score.text = "Score: " + scoreValue.ToString();
         if (scoreValue == 4)
@@ -57,12 +60,29 @@ public class PlayerScript : MonoBehaviour
         }
     }
 
+    void Flip()
+   {
+     facingRight = !facingRight;
+     Vector2 Scaler = transform.localScale;
+     Scaler.x = Scaler.x * -1;
+     transform.localScale = Scaler;
+   }
     void FixedUpdate()
     {
         float hozMovement = Input.GetAxis("Horizontal");
         float vertMovement = Input.GetAxis("Vertical");
         rd2d.AddForce(new Vector2(hozMovement * speed, vertMovement * speed));
         isOnGround = Physics2D.OverlapCircle(groundcheck.position, checkRadius, allGround);
+        animator.SetFloat("HorizontalValue", Mathf.Abs(Input.GetAxis("Horizontal")));
+        animator.SetFloat("VerticalValue", Input.GetAxis("Vertical"));
+        if (facingRight == false && hozMovement > 0)
+        {
+            Flip();
+        }
+        else if (facingRight == true && hozMovement <0)
+        {
+            Flip();
+        }
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
@@ -83,13 +103,14 @@ public class PlayerScript : MonoBehaviour
         } 
     }
 
-    private void OnCollisionStay2D(Collision2D collision)
+  private void OnCollisionStay2D(Collision2D collision)
     {
-        if (collision.collider.tag == "Ground")
+        
+        if (collision.collider.tag == "Ground" && isOnGround)
         {
             if (Input.GetKey(KeyCode.W))
             {
-                rd2d.AddForce(new Vector2(0, 3), ForceMode2D.Impulse); 
+                rd2d.AddForce(new Vector2(0f, jump), ForceMode2D.Impulse);
             }
         }
     }
