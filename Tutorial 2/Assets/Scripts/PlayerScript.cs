@@ -2,26 +2,23 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 public class PlayerScript : MonoBehaviour
 {
     private Rigidbody2D rd2d;
-
     public float speed;
-
-    public Text score;
-
-    private int scoreValue = 0;
-
-    public GameObject winTextObject;
-
-    public GameObject loseTextObject;
-
-    public Text lives;
-
-    private int livesValue = 3;
-
-    // Start is called before the first frame update
+    public float jump;
+    public TextMeshProUGUI score;
+    private int scoreValue;
+    public GameObject WinTextObject;
+    public GameObject LoseTextObject;
+    public TextMeshProUGUI lives;
+    private int livesValue;
+    private bool isOnGround;
+    public Transform groundcheck;
+    public float checkRadius;
+    public LayerMask allGround;
    void Start()
     {
         rd2d = GetComponent<Rigidbody2D>();
@@ -30,19 +27,19 @@ public class PlayerScript : MonoBehaviour
         rd2d = GetComponent<Rigidbody2D>();
         livesValue = 3;
 
-        SetCountText();
-        winTextObject.SetActive(false);
+        SetScoreText();
+        WinTextObject.SetActive(false);
 
-        SetCountText();
-        loseTextObject.SetActive(false);
+        SetScoreText();
+        LoseTextObject.SetActive(false);
     }
-      void SetCountText()
+      void SetScoreText()
     {
         score.text = "Score: " + scoreValue.ToString();
         if (scoreValue >= 8)
         {
-            winTextObject.SetActive(true);
-            Destroy(gameObject);
+            WinTextObject.SetActive(true);
+            gameObject.SetActive(false);
 
         }
         score.text = "Score: " + scoreValue.ToString();
@@ -55,17 +52,17 @@ public class PlayerScript : MonoBehaviour
         lives.text = "Lives: " + livesValue.ToString();
         if (livesValue == 0)
         {
-            loseTextObject.SetActive(true);
-            Destroy(gameObject);
+            LoseTextObject.SetActive(true);
+            gameObject.SetActive(false);
         }
     }
 
-    // Update is called once per frame
     void FixedUpdate()
     {
         float hozMovement = Input.GetAxis("Horizontal");
         float vertMovement = Input.GetAxis("Vertical");
         rd2d.AddForce(new Vector2(hozMovement * speed, vertMovement * speed));
+        isOnGround = Physics2D.OverlapCircle(groundcheck.position, checkRadius, allGround);
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
@@ -75,12 +72,14 @@ public class PlayerScript : MonoBehaviour
             scoreValue += 1;
             score.text = "Score: " + scoreValue.ToString();
             Destroy(collision.collider.gameObject);
+            SetScoreText();
         }
        if (collision.collider.tag == "Enemy")
         {
             livesValue -= 1;
             lives.text = "Lives: " + livesValue.ToString();
             Destroy(collision.collider.gameObject);
+            SetScoreText();
         } 
     }
 
@@ -90,8 +89,9 @@ public class PlayerScript : MonoBehaviour
         {
             if (Input.GetKey(KeyCode.W))
             {
-                rd2d.AddForce(new Vector2(0, 3), ForceMode2D.Impulse); //the 3 in this line of code is the player's "jumpforce," and you change that number to get different jump behaviors.  You can also create a public variable for it and then edit it in the inspector.
+                rd2d.AddForce(new Vector2(0, 3), ForceMode2D.Impulse); 
             }
         }
     }
+    
 }
