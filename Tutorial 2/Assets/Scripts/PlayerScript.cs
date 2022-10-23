@@ -22,13 +22,42 @@ public class PlayerScript : MonoBehaviour
     private int livesValue = 3;
 
     // Start is called before the first frame update
-    void Start()
+   void Start()
     {
         rd2d = GetComponent<Rigidbody2D>();
-        score.text = scoreValue.ToString();
+        scoreValue = 0;
+
+        rd2d = GetComponent<Rigidbody2D>();
+        livesValue = 3;
+
+        SetCountText();
         winTextObject.SetActive(false);
+
+        SetCountText();
         loseTextObject.SetActive(false);
+    }
+      void SetCountText()
+    {
+        score.text = "Score: " + scoreValue.ToString();
+        if (scoreValue >= 8)
+        {
+            winTextObject.SetActive(true);
+            Destroy(gameObject);
+
+        }
+        score.text = "Score: " + scoreValue.ToString();
+        if (scoreValue == 4)
+        {
+            livesValue = 3;
+            transform.position = new Vector2(100f, 0.5f);
+        }
+
         lives.text = "Lives: " + livesValue.ToString();
+        if (livesValue == 0)
+        {
+            loseTextObject.SetActive(true);
+            Destroy(gameObject);
+        }
     }
 
     // Update is called once per frame
@@ -44,28 +73,14 @@ public class PlayerScript : MonoBehaviour
        if (collision.collider.tag == "Coin")
         {
             scoreValue += 1;
-            score.text = scoreValue.ToString();
+            score.text = "Score: " + scoreValue.ToString();
             Destroy(collision.collider.gameObject);
-        }
-         if (scoreValue >= 8)
-        {
-            winTextObject.SetActive(true);
-        }
-        if (scoreValue == 4) 
-        {
-            livesValue = 3;
-            transform.position = new Vector2(100f, 0.5f);
         }
        if (collision.collider.tag == "Enemy")
         {
             livesValue -= 1;
             lives.text = "Lives: " + livesValue.ToString();
             Destroy(collision.collider.gameObject);
-        }
-        if (livesValue <= 0) 
-        {
-            loseTextObject.SetActive(true);
-            gameObject.SetActive(false);
         } 
     }
 
